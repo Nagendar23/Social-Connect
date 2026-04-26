@@ -1,8 +1,8 @@
-// middleware.ts
+// proxy.ts — Next.js 16 replacement for middleware.ts
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -29,8 +29,9 @@ export async function middleware(request: NextRequest) {
   // Get current session
   const { data: { user } } = await supabase.auth.getUser()
 
-  const isAuthPage = request.nextUrl.pathname.startsWith('/login') ||
-                     request.nextUrl.pathname.startsWith('/register')
+  const isAuthPage =
+    request.nextUrl.pathname.startsWith('/login') ||
+    request.nextUrl.pathname.startsWith('/register')
 
   // If not logged in and trying to access a protected page → redirect to login
   if (!user && !isAuthPage) {
@@ -46,6 +47,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Run middleware on all routes except static files and API routes
   matcher: ['/((?!_next/static|_next/image|favicon.ico|api).*)'],
 }
