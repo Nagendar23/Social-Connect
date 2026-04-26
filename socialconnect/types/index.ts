@@ -24,7 +24,7 @@ export type Post = {
   is_active: boolean
   created_at: string
   updated_at: string
-  // Joined from users table when fetching feed
+  // Joined from profiles table when fetching feed
   author?: Pick<User, 'username' | 'avatar_url' | 'first_name' | 'last_name'>
 }
 
