@@ -50,66 +50,59 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl">Create an account</CardTitle>
-          <CardDescription>Join SocialConnect today</CardDescription>
-        </CardHeader>
+    <Card className="mx-auto w-full max-w-md">
+      <CardHeader>
+        <CardTitle className="text-2xl">Create an account</CardTitle>
+        <CardDescription>Join SocialConnect and start sharing your work.</CardDescription>
+      </CardHeader>
 
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            {error && (
-              <div className="bg-red-50 text-red-600 text-sm p-3 rounded-md">
-                {error}
-              </div>
-            )}
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="first_name">First Name</Label>
-                <Input id="first_name" name="first_name" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="last_name">Last Name</Label>
-                <Input id="last_name" name="last_name" required />
-              </div>
+      <form onSubmit={handleSubmit}>
+        <CardContent className="space-y-4">
+          {error && (
+            <div className="rounded-xl border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+              {error}
             </div>
+          )}
 
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                name="username"
-                placeholder="e.g. john_doe"
-                required
-              />
+              <Label htmlFor="first_name" className="field-label">First Name</Label>
+              <Input id="first_name" name="first_name" required />
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" required />
+              <Label htmlFor="last_name" className="field-label">Last Name</Label>
+              <Input id="last_name" name="last_name" required />
             </div>
+          </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" name="password" type="password" required />
-            </div>
-          </CardContent>
+          <div className="space-y-2">
+            <Label htmlFor="username" className="field-label">Username</Label>
+            <Input id="username" name="username" placeholder="e.g. john_doe" required />
+          </div>
 
-          <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Creating account...' : 'Create Account'}
-            </Button>
-            <p className="text-sm text-slate-600">
-              Already have an account?{' '}
-              <Link href="/login" className="text-blue-600 hover:underline">
-                Sign in
-              </Link>
-            </p>
-          </CardFooter>
-        </form>
-      </Card>
-    </div>
+          <div className="space-y-2">
+            <Label htmlFor="email" className="field-label">Email</Label>
+            <Input id="email" name="email" type="email" required />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="password" className="field-label">Password</Label>
+            <Input id="password" name="password" type="password" required />
+          </div>
+        </CardContent>
+
+        <CardFooter className="flex flex-col gap-4">
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? 'Creating account...' : 'Create Account'}
+          </Button>
+          <p className="text-sm text-muted-foreground">
+            Already have an account?{' '}
+            <Link href="/login" className="font-medium text-primary hover:underline">
+              Sign in
+            </Link>
+          </p>
+        </CardFooter>
+      </form>
+    </Card>
   )
 }

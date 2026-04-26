@@ -1,16 +1,17 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { ImagePlus, X } from 'lucide-react'
+import { ImagePlus, Sparkles, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Post } from '@/types'
 
 type Props = {
   avatarUrl?: string | null
   username?: string
-  onPostCreated: (post: any) => void
+  onPostCreated: (post: Post) => void
 }
 
 export default function CreatePostForm({ avatarUrl, username, onPostCreated }: Props) {
@@ -23,6 +24,14 @@ export default function CreatePostForm({ avatarUrl, username, onPostCreated }: P
 
   const MAX_CHARS = 280
   const remaining = MAX_CHARS - content.length
+
+  useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview)
+      }
+    }
+  }, [imagePreview])
 
   function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -37,12 +46,19 @@ export default function CreatePostForm({ avatarUrl, username, onPostCreated }: P
       return
     }
 
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview)
+    }
+
     setImageFile(file)
     setImagePreview(URL.createObjectURL(file))
     setError('')
   }
 
   function removeImage() {
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview)
+    }
     setImageFile(null)
     setImagePreview(null)
     if (fileInputRef.current) fileInputRef.current.value = ''
@@ -101,48 +117,54 @@ export default function CreatePostForm({ avatarUrl, username, onPostCreated }: P
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div className="flex gap-3">
-        <Avatar className="h-10 w-10 shrink-0">
+    <div className="surface-card p-5 sm:p-6">
+      <div className="flex items-start gap-3">
+        <Avatar className="h-11 w-11 shrink-0">
           <AvatarImage src={avatarUrl || ''} />
-          <AvatarFallback>{username?.[0]?.toUpperCase()}</AvatarFallback>
+          <AvatarFallback>{username?.[0]?.toUpperCase() || 'U'}</AvatarFallback>
         </Avatar>
 
-        <form onSubmit={handleSubmit} className="flex-1 space-y-3">
-          <Textarea
-            placeholder="What's on your mind?"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            maxLength={MAX_CHARS}
-            rows={3}
-            className="min-h-24 resize-none border-0 p-0 text-sm shadow-none focus-visible:ring-0"
-          />
+        <form onSubmit={handleSubmit} className="flex-1 space-y-4">
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-foreground/90">Share an update</p>
+            <Textarea
+              placeholder="What are you building or thinking about today?"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              maxLength={MAX_CHARS}
+              rows={4}
+              className="min-h-28 resize-none border-border/80 bg-background shadow-none"
+            />
+          </div>
 
-          {/* Image Preview */}
           {imagePreview && (
-            <div className="relative inline-block">
+            <div className="relative inline-block overflow-hidden rounded-xl border border-border/80 bg-muted/30 p-1">
               <Image
                 src={imagePreview}
                 alt="Preview"
-                width={200}
-                height={150}
-                className="rounded-lg object-cover max-h-48"
+                width={240}
+                height={170}
+                className="max-h-48 rounded-lg object-cover"
               />
               <button
                 type="button"
                 onClick={removeImage}
-                className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-0.5"
+                aria-label="Remove image"
+                className="absolute right-2 top-2 rounded-full bg-foreground/80 p-1 text-background transition-colors hover:bg-foreground"
               >
                 <X className="h-3 w-3" />
               </button>
             </div>
           )}
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && (
+            <p className="rounded-xl border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+              {error}
+            </p>
+          )}
 
-          <div className="flex items-center justify-between border-t border-slate-100 pt-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/70 pt-3">
             <div className="flex items-center gap-2">
-              {/* Hidden file input */}
               <input
                 ref={fileInputRef}
                 type="file"
@@ -153,23 +175,29 @@ export default function CreatePostForm({ avatarUrl, username, onPostCreated }: P
               <Button
                 type="button"
                 variant="ghost"
-                size="icon"
+                size="sm"
                 onClick={() => fileInputRef.current?.click()}
-                className="text-slate-400 hover:text-blue-500"
+                className="gap-1.5"
               >
-                <ImagePlus className="h-5 w-5" />
+                <ImagePlus className="h-4 w-4" />
+                Attach image
               </Button>
             </div>
 
             <div className="flex items-center gap-3">
-              <span className={`text-xs ${remaining < 20 ? 'text-red-500' : 'text-slate-400'}`}>
+              <span
+                className={`inline-flex items-center gap-1 text-xs font-medium ${
+                  remaining < 20 ? 'text-destructive' : 'text-muted-foreground'
+                }`}
+              >
+                <Sparkles className="h-3 w-3" />
                 {remaining}
               </span>
               <Button
                 type="submit"
                 size="sm"
                 disabled={loading || !content.trim()}
-                className="px-5"
+                className="min-w-24"
               >
                 {loading ? 'Posting...' : 'Post'}
               </Button>

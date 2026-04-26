@@ -20,13 +20,13 @@ export default async function MainLayout({
     .single()
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen">
       <Navbar
         username={profile?.username}
         avatarUrl={profile?.avatar_url}
         userId={user.id}
       />
-      <main className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6">
+      <main className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6 lg:py-10">
         {children}
       </main>
     </div>

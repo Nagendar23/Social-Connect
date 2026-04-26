@@ -50,57 +50,55 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl">Welcome back</CardTitle>
-          <CardDescription>Sign in to your SocialConnect account</CardDescription>
-        </CardHeader>
+    <Card className="mx-auto w-full max-w-md">
+      <CardHeader>
+        <CardTitle className="text-2xl">Welcome back</CardTitle>
+        <CardDescription>Sign in to continue to your SocialConnect workspace.</CardDescription>
+      </CardHeader>
 
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            {isRegistered && (
-              <div className="bg-green-50 text-green-700 text-sm p-3 rounded-md border border-green-200">
-                Registration successful! Please check your email inbox (or spam folder) to confirm your account before logging in.
-              </div>
-            )}
-            
-            {error && (
-              <div className="bg-red-50 text-red-600 text-sm p-3 rounded-md">
-                {error}
-              </div>
-            )}
-
-            <div className="space-y-2">
-              <Label htmlFor="login">Email or Username</Label>
-              <Input
-                id="login"
-                name="login"
-                type="text"
-                placeholder="Enter your email or username"
-                required
-              />
+      <form onSubmit={handleSubmit}>
+        <CardContent className="space-y-4">
+          {isRegistered && (
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+              Registration successful. Confirm your email, then sign in.
             </div>
+          )}
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" name="password" type="password" required />
+          {error && (
+            <div className="rounded-xl border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+              {error}
             </div>
-          </CardContent>
+          )}
 
-          <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign In'}
-            </Button>
-            <p className="text-sm text-slate-600">
-              Don't have an account?{' '}
-              <Link href="/register" className="text-blue-600 hover:underline">
-                Create one
-              </Link>
-            </p>
-          </CardFooter>
-        </form>
-      </Card>
-    </div>
+          <div className="space-y-2">
+            <Label htmlFor="login" className="field-label">Email or Username</Label>
+            <Input
+              id="login"
+              name="login"
+              type="text"
+              placeholder="you@example.com"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="password" className="field-label">Password</Label>
+            <Input id="password" name="password" type="password" required />
+          </div>
+        </CardContent>
+
+        <CardFooter className="flex flex-col gap-4">
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? 'Signing in...' : 'Sign In'}
+          </Button>
+          <p className="text-sm text-muted-foreground">
+            Don&apos;t have an account?{' '}
+            <Link href="/register" className="font-medium text-primary hover:underline">
+              Create one
+            </Link>
+          </p>
+        </CardFooter>
+      </form>
+    </Card>
   )
 }

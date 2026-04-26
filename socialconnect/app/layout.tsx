@@ -1,8 +1,18 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Manrope, Space_Grotesk } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const manrope = Manrope({
+  subsets: ['latin'],
+  variable: '--font-manrope',
+  display: 'swap',
+})
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-space-grotesk',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: 'SocialConnect',
@@ -16,7 +26,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body
+        className={`${manrope.variable} ${spaceGrotesk.variable} min-h-screen bg-background text-foreground`}
+      >
+        {children}
+      </body>
     </html>
   )
 }

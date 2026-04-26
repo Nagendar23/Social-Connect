@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
-import Image from 'next/image'
 import Link from 'next/link'
 import { MapPin, Globe, Calendar } from 'lucide-react'
 import { format } from 'date-fns'
@@ -23,48 +22,56 @@ export default function ProfilePage() {
   const [showEditModal, setShowEditModal] = useState(false)
   const [loading, setLoading] = useState(true)
   const [followLoading, setFollowLoading] = useState(false)
+  const [pageError, setPageError] = useState('')
 
   const isOwnProfile = currentUserId === user_id
 
   useEffect(() => {
     async function load() {
+      setPageError('')
       const supabase = createClient()
 
-      // Get current logged-in user
       const { data: { user } } = await supabase.auth.getUser()
       if (user) setCurrentUserId(user.id)
 
-      // Fetch profile
-      const profileRes = await fetch(`/api/users/${user_id}`)
-      const profileData = await profileRes.json()
-      setProfile(profileData.profile)
+      try {
+        const profileRes = await fetch(`/api/users/${user_id}`)
+        if (!profileRes.ok) {
+          throw new Error('Unable to load this profile right now.')
+        }
 
-      // Fetch this user's posts
-      const { data: postsData } = await supabase
-        .from('posts')
-        .select(`
-          *,
-          author:profiles(id, username, first_name, last_name, avatar_url)
-        `)
-        .eq('author_id', user_id)
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
+        const profileData = await profileRes.json()
+        setProfile(profileData.profile)
 
-      setPosts(postsData || [])
+        const { data: postsData } = await supabase
+          .from('posts')
+          .select(`
+            *,
+            author:profiles(id, username, first_name, last_name, avatar_url)
+          `)
+          .eq('author_id', user_id)
+          .eq('is_active', true)
+          .order('created_at', { ascending: false })
 
-      // Check if current user follows this profile
-      if (user && user.id !== user_id) {
-        const { data: followData } = await supabase
-          .from('follows')
-          .select('id')
-          .eq('follower_id', user.id)
-          .eq('following_id', user_id)
-          .single()
+        setPosts(postsData || [])
 
-        setIsFollowing(!!followData)
+        if (user && user.id !== user_id) {
+          const { data: followData } = await supabase
+            .from('follows')
+            .select('id')
+            .eq('follower_id', user.id)
+            .eq('following_id', user_id)
+            .single()
+
+          setIsFollowing(!!followData)
+        }
+      } catch (err) {
+        setPageError(
+          err instanceof Error ? err.message : 'Unable to load this profile right now.'
+        )
+      } finally {
+        setLoading(false)
       }
-
-      setLoading(false)
     }
     load()
   }, [user_id])
@@ -104,22 +111,28 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="space-y-4">
-        <div className="bg-white border border-slate-200 rounded-xl p-6 h-48 animate-pulse" />
+        <div className="surface-card h-48 animate-pulse p-6" />
+      </div>
+    )
+  }
+
+  if (pageError) {
+    return (
+      <div className="surface-card px-6 py-14 text-center">
+        <p className="text-base font-semibold text-foreground">Could not load profile</p>
+        <p className="mt-1 text-sm text-muted-foreground">{pageError}</p>
       </div>
     )
   }
 
   if (!profile) {
-    return (
-      <p className="text-center text-slate-500 mt-10">User not found.</p>
-    )
+    return <p className="mt-10 text-center text-muted-foreground">User not found.</p>
   }
 
   return (
-    <div className="space-y-4">
-      {/* Profile Header Card */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-4">
-        <div className="flex items-start justify-between">
+    <div className="space-y-6">
+      <div className="surface-card space-y-5 p-6 sm:p-7">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <Avatar className="h-20 w-20">
             <AvatarImage src={profile.avatar_url || ''} />
             <AvatarFallback className="text-2xl">
@@ -127,12 +140,11 @@ export default function ProfilePage() {
             </AvatarFallback>
           </Avatar>
 
-          {/* Action Button */}
           {isOwnProfile ? (
             <Button
               variant="outline"
               onClick={() => setShowEditModal(true)}
-              className="rounded-full"
+              size="sm"
             >
               Edit Profile
             </Button>
@@ -141,32 +153,25 @@ export default function ProfilePage() {
               variant={isFollowing ? 'outline' : 'default'}
               onClick={handleFollowToggle}
               disabled={followLoading}
-              className="rounded-full"
+              size="sm"
             >
-              {followLoading
-                ? '...'
-                : isFollowing
-                ? 'Unfollow'
-                : 'Follow'}
+              {followLoading ? 'Updating...' : isFollowing ? 'Unfollow' : 'Follow'}
             </Button>
           )}
         </div>
 
-        {/* Name & Username */}
         <div>
-          <h1 className="text-xl font-bold">
+          <h1 className="font-heading text-2xl font-semibold tracking-tight text-foreground">
             {profile.first_name} {profile.last_name}
           </h1>
-          <p className="text-slate-500">@{profile.username}</p>
+          <p className="mt-1 text-sm text-muted-foreground">@{profile.username}</p>
         </div>
 
-        {/* Bio */}
         {profile.bio && (
-          <p className="text-slate-700 text-sm leading-relaxed">{profile.bio}</p>
+          <p className="max-w-2xl text-sm leading-relaxed text-foreground/85">{profile.bio}</p>
         )}
 
-        {/* Meta Info */}
-        <div className="flex flex-wrap gap-4 text-sm text-slate-500">
+        <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
           {profile.location && (
             <span className="flex items-center gap-1">
               <MapPin className="h-4 w-4" />
@@ -178,7 +183,7 @@ export default function ProfilePage() {
               href={profile.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 text-blue-500 hover:underline"
+              className="flex items-center gap-1 text-primary hover:underline"
             >
               <Globe className="h-4 w-4" />
               {profile.website.replace(/^https?:\/\//, '')}
@@ -190,34 +195,32 @@ export default function ProfilePage() {
           </span>
         </div>
 
-        {/* Stats */}
-        <div className="flex gap-6 pt-2 border-t border-slate-100">
-          <div className="text-center">
-            <p className="font-bold text-lg">{profile.posts_count}</p>
-            <p className="text-xs text-slate-500">Posts</p>
+        <div className="grid gap-3 border-t border-border/70 pt-4 sm:grid-cols-3">
+          <div className="rounded-xl bg-muted/45 px-4 py-3 text-center">
+            <p className="text-lg font-semibold tracking-tight text-foreground">{profile.posts_count}</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Posts</p>
           </div>
           <Link
             href={`/profile/${user_id}/followers`}
-            className="text-center hover:opacity-70"
+            className="rounded-xl bg-muted/45 px-4 py-3 text-center transition-colors hover:bg-muted/70"
           >
-            <p className="font-bold text-lg">{profile.followers_count}</p>
-            <p className="text-xs text-slate-500">Followers</p>
+            <p className="text-lg font-semibold tracking-tight text-foreground">{profile.followers_count}</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Followers</p>
           </Link>
           <Link
             href={`/profile/${user_id}/following`}
-            className="text-center hover:opacity-70"
+            className="rounded-xl bg-muted/45 px-4 py-3 text-center transition-colors hover:bg-muted/70"
           >
-            <p className="font-bold text-lg">{profile.following_count}</p>
-            <p className="text-xs text-slate-500">Following</p>
+            <p className="text-lg font-semibold tracking-tight text-foreground">{profile.following_count}</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Following</p>
           </Link>
         </div>
       </div>
 
-      {/* User's Posts */}
       <div className="space-y-4">
-        <h2 className="font-semibold text-slate-700">Posts</h2>
+        <h2 className="text-sm font-semibold tracking-tight text-foreground/90">Posts</h2>
         {posts.length === 0 ? (
-          <p className="text-center text-slate-500 py-10 text-sm">
+          <p className="surface-card py-12 text-center text-sm text-muted-foreground">
             {isOwnProfile ? "You haven't posted anything yet." : 'No posts yet.'}
           </p>
         ) : (
@@ -232,7 +235,6 @@ export default function ProfilePage() {
         )}
       </div>
 
-      {/* Edit Profile Modal */}
       {showEditModal && (
         <EditProfileModal
           profile={profile}

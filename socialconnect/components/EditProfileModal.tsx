@@ -93,31 +93,32 @@ export default function EditProfileModal({ profile, onClose, onUpdated }: Props)
   }
 
   return (
-    // Backdrop
     <div
-      className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/35 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
-      {/* Modal — stop click from closing when clicking inside */}
       <Card
-        className="w-full max-w-md max-h-[90vh] overflow-y-auto"
+        className="max-h-[90vh] w-full max-w-xl overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <CardHeader>
           <CardTitle>Edit Profile</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Keep your profile up to date so others can find and follow you.
+          </p>
         </CardHeader>
 
         <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-5">
             {error && (
-              <div className="bg-red-50 text-red-600 text-sm p-3 rounded-md">
+              <div className="rounded-xl border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-destructive">
                 {error}
               </div>
             )}
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="first_name">First Name</Label>
+                <Label htmlFor="first_name" className="field-label">First Name</Label>
                 <Input
                   id="first_name"
                   name="first_name"
@@ -127,7 +128,7 @@ export default function EditProfileModal({ profile, onClose, onUpdated }: Props)
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="last_name">Last Name</Label>
+                <Label htmlFor="last_name" className="field-label">Last Name</Label>
                 <Input
                   id="last_name"
                   name="last_name"
@@ -139,7 +140,7 @@ export default function EditProfileModal({ profile, onClose, onUpdated }: Props)
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="bio">Bio</Label>
+              <Label htmlFor="bio" className="field-label">Bio</Label>
               <Textarea
                 id="bio"
                 name="bio"
@@ -150,13 +151,13 @@ export default function EditProfileModal({ profile, onClose, onUpdated }: Props)
                 placeholder="Tell people about yourself..."
                 className="resize-none"
               />
-              <p className="text-xs text-slate-400 text-right">
+              <p className="text-right text-xs text-muted-foreground">
                 {formData.bio.length}/160
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="website">Website</Label>
+              <Label htmlFor="website" className="field-label">Website</Label>
               <Input
                 id="website"
                 name="website"
@@ -167,7 +168,7 @@ export default function EditProfileModal({ profile, onClose, onUpdated }: Props)
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="location">Location</Label>
+              <Label htmlFor="location" className="field-label">Location</Label>
               <Input
                 id="location"
                 name="location"
@@ -178,14 +179,14 @@ export default function EditProfileModal({ profile, onClose, onUpdated }: Props)
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="avatar">Profile Picture</Label>
+              <Label htmlFor="avatar" className="field-label">Profile Picture</Label>
               <Input
                 id="avatar"
                 type="file"
                 accept="image/jpeg,image/png"
                 onChange={(e) => setAvatarFile(e.target.files?.[0] || null)}
               />
-              <p className="text-xs text-slate-400">JPEG or PNG, max 2MB</p>
+              <p className="text-xs text-muted-foreground">JPEG or PNG, max 2MB</p>
             </div>
           </CardContent>
 
