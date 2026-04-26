@@ -42,57 +42,57 @@ SocialConnect enables users to:
 
 ## 📁 Project Structure
 
-socialconnect/
-├── app/
-│   ├── (auth)/                    # Auth route group (unauthenticated)
-│   │   ├── layout.tsx
-│   │   ├── login/
-│   │   └── register/
-│   ├── (main)/                    # Protected route group (authenticated)
-│   │   ├── layout.tsx
-│   │   ├── feed/                  # Main social feed
-│   │   ├── posts/[post_id]/       # Single post detail + comments
-│   │   └── profile/[user_id]/     # User profile page
-│   ├── api/                       # Next.js API Route Handlers
-│   │   ├── auth/
-│   │   ├── feed/
-│   │   ├── logout/
-│   │   ├── posts/
-│   │   │   ├── route.ts           # GET list / POST create
-│   │   │   └── [post_id]/
-│   │   │       ├── route.ts       # GET / PATCH / DELETE single post
-│   │   │       ├── like/          # POST / DELETE like toggle
-│   │   │       └── comments/      # GET / POST comments
-│   │   ├── upload/                # Image upload to Supabase Storage
-│   │   └── users/
-│   │       ├── route.ts           # GET all users
-│   │       ├── me/                # GET current user profile
-│   │       └── [user_id]/
-│   │           ├── route.ts       # GET user profile by ID
-│   │           ├── follow/        # POST / DELETE follow toggle
-│   │           ├── followers/     # GET followers list
-│   │           └── following/     # GET following list
-│   ├── globals.css
-│   ├── layout.tsx
-│   └── page.tsx                   # Root redirect
-├── components/
-│   ├── CreatePostForm.tsx
-│   ├── EditProfileModal.tsx
-│   ├── Navbar.tsx
-│   ├── PostCard.tsx
-│   └── ui/                        # shadcn/ui components (Avatar, Button, etc.)
-├── lib/
-│   ├── supabase/
-│   │   ├── client.ts              # Browser-side Supabase client
-│   │   └── server.ts              # Server-side Supabase client (cookie-aware)
-│   ├── utils.ts
-│   └── validation.ts              # Zod schemas
-├── types/
-│   └── index.js                   # Shared TypeScript types
-├── middleware.ts                   # Auth guard (redirect logic)
-├── next.config.ts
-├── tailwind.config / postcss.config.mjs
-└── .env.local
+socialconnect/  
+├── app/  
+│   ├── (auth)/                    # Auth route group (unauthenticated)  
+│   │   ├── layout.tsx  
+│   │   ├── login/      
+│   │   └── register/    
+│   ├── (main)/                    # Protected route group (authenticated)      
+│   │   ├── layout.tsx      
+│   │   ├── feed/                  # Main social feed      
+│   │   ├── posts/[post_id]/       # Single post detail + comments    
+│   │   └── profile/[user_id]/     # User profile page      
+│   ├── api/                       # Next.js API Route Handlers      
+│   │   ├── auth/      
+│   │   ├── feed/    
+│   │   ├── logout/    
+│   │   ├── posts/      
+│   │   │   ├── route.ts           # GET list / POST create    
+│   │   │   └── [post_id]/    
+│   │   │       ├── route.ts       # GET / PATCH / DELETE single post      
+│   │   │       ├── like/          # POST / DELETE like toggle    
+│   │   │       └── comments/      # GET / POST comments    
+│   │   ├── upload/                # Image upload to Supabase Storage      
+│   │   └── users/      
+│   │       ├── route.ts           # GET all users    
+│   │       ├── me/                # GET current user profile      
+│   │       └── [user_id]/      
+│   │           ├── route.ts       # GET user profile by ID      
+│   │           ├── follow/        # POST / DELETE follow toggle      
+│   │           ├── followers/     # GET followers list    
+│   │           └── following/     # GET following list      
+│   ├── globals.css    
+│   ├── layout.tsx      
+│   └── page.tsx                   # Root redirect    
+├── components/    
+│   ├── CreatePostForm.tsx    
+│   ├── EditProfileModal.tsx      
+│   ├── Navbar.tsx        
+│   ├── PostCard.tsx      
+│   └── ui/                        # shadcn/ui components (Avatar, Button, etc.)      
+├── lib/      
+│   ├── supabase/          
+│   │   ├── client.ts                  # Browser-side Supabase client        
+│   │   └── server.ts              # Server-side Supabase client (cookie-aware)      
+│   ├── utils.ts          
+│   └── validation.ts              # Zod schemas    
+├── types/      
+│   └── index.js                   # Shared TypeScript types        
+├── middleware.ts                   # Auth guard (redirect logic)      
+├── next.config.ts      
+├── tailwind.config / postcss.config.mjs        
+└── .env.local          
 
 
 
