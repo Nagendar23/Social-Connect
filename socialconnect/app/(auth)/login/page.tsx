@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 
-export default function LoginPage() {
+// Inner component — safely uses useSearchParams() inside a Suspense boundary
+function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const isRegistered = searchParams.get('registered') === 'true'
@@ -100,5 +101,14 @@ export default function LoginPage() {
         </CardFooter>
       </form>
     </Card>
+  )
+}
+
+// Outer page — wraps LoginForm in Suspense as required by Next.js App Router
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="mx-auto w-full max-w-md animate-pulse rounded-2xl bg-muted h-96" />}>
+      <LoginForm />
+    </Suspense>
   )
 }
