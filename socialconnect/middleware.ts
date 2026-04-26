@@ -1,0 +1,51 @@
+// middleware.ts
+import { createServerClient } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server'
+
+export async function middleware(request: NextRequest) {
+  let supabaseResponse = NextResponse.next({ request })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          )
+          supabaseResponse = NextResponse.next({ request })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
+          )
+        },
+      },
+    }
+  )
+
+  // Get current session
+  const { data: { user } } = await supabase.auth.getUser()
+
+  const isAuthPage = request.nextUrl.pathname.startsWith('/login') ||
+                     request.nextUrl.pathname.startsWith('/register')
+
+  // If not logged in and trying to access a protected page → redirect to login
+  if (!user && !isAuthPage) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  // If logged in and trying to access login/register → redirect to feed
+  if (user && isAuthPage) {
+    return NextResponse.redirect(new URL('/feed', request.url))
+  }
+
+  return supabaseResponse
+}
+
+export const config = {
+  // Run middleware on all routes except static files and API routes
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|api).*)'],
+}
